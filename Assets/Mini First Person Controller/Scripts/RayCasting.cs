@@ -29,7 +29,6 @@ public class RayCasting : MonoBehaviour
             {
                 case "test":
                     er.transform.position = _hit.point+new Vector3(0,0.3f,0);
-
                 break;
             }
         }
