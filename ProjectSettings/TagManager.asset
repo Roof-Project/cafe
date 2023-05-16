@@ -3,13 +3,12 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags:
-  - test
+  tags: []
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - test
+  - 
   - Water
   - UI
   - 
