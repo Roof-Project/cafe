@@ -24,12 +24,12 @@ public class RayCasting : MonoBehaviour
         RaycastHit _hit;
         if(Physics.Raycast(ray, out _hit, 3f, interactiveObjectLayer))
         {
-
+            Debug.Log("!");
             switch(_hit.collider.gameObject.tag)
             {
                 case "test":
-                    er.transform.position = _hit.point+new Vector3(0,0.3f,0);
-
+                    er.transform.position = _hit.point + new Vector3(0,0.3f,0);
+                    Debug.Log("!!");
                 break;
             }
         }
