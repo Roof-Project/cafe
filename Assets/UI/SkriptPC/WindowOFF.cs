@@ -12,7 +12,7 @@ public class WindowOFF : MonoBehaviour
     
 
     public static WindowOFF windowOFF;
-    public GameObject WindowSeting;
+    public GameObject[] WindowProgramm;
     public Animator anim;
     public GameObject OffPanel;
 
@@ -50,9 +50,9 @@ public class WindowOFF : MonoBehaviour
     {
         OffPanel.gameObject.SetActive(false);
     }
-    public void DefouldSetingWindow()
+    public void DefouldSetingWindow(int _idProgramm)
     {
-        WindowSeting.gameObject.SetActive(true);
+        WindowProgramm[_idProgramm].gameObject.SetActive(true);
         
         Debug.Log("chtonibudy");
     }
@@ -78,14 +78,13 @@ public class WindowOFF : MonoBehaviour
     public void Back()
     {
         UnderPanelClose();
-        WindowSeting.gameObject.SetActive(false);
         ButtonSeting.isOpen = false;
     }
 
-    public void UnderPanelOpen(Sprite _sprite)
+    public void UnderPanelOpen(Sprite _sprite,int _idProgramm)
     {
         ProgramOpen[HowMatchOpen].sprite = _sprite;
-        runningProgram[HowMatchOpen]= WindowSeting;
+        runningProgram[HowMatchOpen]= WindowProgramm[_idProgramm];
         HowMatchOpen++;
     }
 

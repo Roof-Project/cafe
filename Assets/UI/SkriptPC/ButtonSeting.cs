@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class ButtonSeting : MonoBehaviour, IPointerClickHandler
 {
     public static bool isOpen;
-    
+    [SerializeField] int idProgramm;
 
     
     public void OnPointerClick(PointerEventData eventData)
@@ -18,8 +18,8 @@ public class ButtonSeting : MonoBehaviour, IPointerClickHandler
             isOpen = true;
             eventData.clickCount = 0;
             Debug.Log(eventData.clickCount);
-            WindowOFF.windowOFF.DefouldSetingWindow();
-            WindowOFF.windowOFF.UnderPanelOpen(gameObject.GetComponent<Image>().sprite);
+            WindowOFF.windowOFF.DefouldSetingWindow(idProgramm);
+            WindowOFF.windowOFF.UnderPanelOpen(gameObject.GetComponent<Image>().sprite,idProgramm);
         }
     }
 }
