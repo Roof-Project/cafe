@@ -1,14 +1,27 @@
 using UnityEngine;
-
+using UnityEngine.UI;
 public class RayCasting : MonoBehaviour
 {
+    [Header("Настройка управление взаимодействия")]
+    public KeyCode use;
+
+    [Header("Настройка курсоров")]
+    [SerializeField] private GameObject arm;
+    [SerializeField] private GameObject cursor;
+    [SerializeField] private GameObject theScaleOfLoadingTakingAnItem;
+
+    [Header("Настройка слоя интерактивных объектов")]
     [SerializeField] private LayerMask interactiveObjectLayer;
-    [SerializeField] private GameObject ruca;
-    [SerializeField] private GameObject crest;
+
+    [Header("Настройка шейдера для взятых объектов")]
+    [SerializeField] private Material shaderOfTheTakenObject;
+
     void Update()
     {
         CheckingObjectTags();
     }
+
+    //пускает лучи пока не пройдёт проверка по тегу 
     private void CheckingObjectTags()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -18,26 +31,40 @@ public class RayCasting : MonoBehaviour
             switch(_hit.collider.gameObject.tag)
             {
                 case "test":
-                    ChangingTheCursor(true);
+                    СursorСontroller(true);
+                    ProcessingTheInteractionOfObjects(_hit.collider);
                 break;
             }
         }
         else
         {
-            ChangingTheCursor(false);
+            СursorСontroller(false);
         }
     }
-    private void ChangingTheCursor(bool _activ)
+
+    //регулирует курсор в зависимосте от объекта на который мы навелись 
+    private void СursorСontroller(bool _activ)
     {
         if(_activ==true)
         {
-            ruca.SetActive(true);
-            crest.SetActive(false);
+            arm.SetActive(true);
+            cursor.SetActive(false);
         }
         if(_activ==false)
         {
-            ruca.SetActive(false);
-            crest.SetActive(true);
+            arm.SetActive(false);
+            cursor.SetActive(true);
+        }
+    }
+    private void ProcessingTheInteractionOfObjects(Collider _other)
+    {
+        if(Input.GetKey(use))
+        {
+            theScaleOfLoadingTakingAnItem.GetComponent<Image>().fillAmount += Time.deltaTime/5;
+        }
+        else
+        {
+            theScaleOfLoadingTakingAnItem.GetComponent<Image>().fillAmount = 0;
         }
     }
 }
