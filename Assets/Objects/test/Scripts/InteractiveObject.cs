@@ -4,10 +4,14 @@ using UnityEngine;
 
 public class InteractiveObject : MonoBehaviour
 {
-    public static Material originalMaterial;
+    private static Material originalMaterial;
 
     private void Start()
     {
         originalMaterial = GetComponent<MeshRenderer>().material;
+    }
+    public void returnTheOriginalMaterial()
+    {
+        GetComponent<MeshRenderer>().material = originalMaterial;
     }
 }

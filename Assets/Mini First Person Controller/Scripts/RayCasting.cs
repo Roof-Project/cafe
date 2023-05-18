@@ -19,8 +19,9 @@ public class RayCasting : MonoBehaviour
 
     private InteractiveObject interactiveObject;
     private static Vector3 hit;
-    private static bool activInteratbl=false;
+    private bool activInteratbl=false;
     private static byte numberLayer;
+    private IEnumerator transferringInteractiveObjects;
     [SerializeField] Transform armController;
 
 
@@ -77,6 +78,7 @@ public class RayCasting : MonoBehaviour
                 interactiveObject = _other.GetComponent<InteractiveObject>();
                 interactiveObject.GetComponent<MeshRenderer>().material=shaderOfTheTakenObject;
                 StartCoroutine(TransferringInteractiveObjects());
+                transferringInteractiveObjects = TransferringInteractiveObjects();
                 numberLayer++;
                 theScaleOfLoadingTakingAnItem.GetComponent<Image>().fillAmount = 0;
                 activInteratbl=!activInteratbl;
@@ -93,7 +95,13 @@ public class RayCasting : MonoBehaviour
         while(true)
         {
             interactiveObject.transform.position = hit;
-            yield return null;
+            if(Input.GetKeyDown(use) && activInteratbl == true)
+            {
+                interactiveObject.returnTheOriginalMaterial();
+                activInteratbl =! activInteratbl;
+                StopCoroutine(transferringInteractiveObjects);
+            }
+            yield return new WaitForEndOfFrame();
         }
     }
 }
