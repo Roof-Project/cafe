@@ -21,7 +21,6 @@ public class RayCasting : MonoBehaviour
     private static Vector3 hit;
     private bool activInteratbl=false;
     private static byte numberLayer;
-    private IEnumerator transferringInteractiveObjects;
     [SerializeField] Transform armController;
 
 
@@ -38,6 +37,7 @@ public class RayCasting : MonoBehaviour
         if(Physics.Raycast(ray, out _hit, 3f, interactiveObjectLayer[numberLayer]))
         {
             hit=_hit.point;
+            
             switch(_hit.collider.gameObject.tag)
             {
                 case "test":
@@ -68,19 +68,19 @@ public class RayCasting : MonoBehaviour
     }
     private void ProcessingTheInteractionOfObjects(Collider _other)
     {
-        if(Input.GetKey(use)&&activInteratbl==false)
+        if(Input.GetKey(use) && !activInteratbl)
         {
             
-            theScaleOfLoadingTakingAnItem.GetComponent<Image>().fillAmount += Time.deltaTime/5;
+            theScaleOfLoadingTakingAnItem.GetComponent<Image>().fillAmount += Time.deltaTime/2.5f;
             if(theScaleOfLoadingTakingAnItem.GetComponent<Image>().fillAmount>=1)
             {
                 
                 interactiveObject = _other.GetComponent<InteractiveObject>();
                 interactiveObject.GetComponent<MeshRenderer>().material=shaderOfTheTakenObject;
                 StartCoroutine(TransferringInteractiveObjects());
-                transferringInteractiveObjects = TransferringInteractiveObjects();
                 numberLayer++;
                 theScaleOfLoadingTakingAnItem.GetComponent<Image>().fillAmount = 0;
+                interactiveObject.GetComponent<Collider>().enabled=false;
                 activInteratbl=!activInteratbl;
             }
         }
@@ -90,18 +90,34 @@ public class RayCasting : MonoBehaviour
         }
     }
 
+    private void ObjectInstallation()
+    {
+        if(Input.GetKeyDown(use) && activInteratbl && interactiveObject!=null)
+        {
+            StopCoroutine(TransferringInteractiveObjects());
+            interactiveObject.returnTheOriginalMaterial();
+            numberLayer--;
+            interactiveObject.GetComponent<Collider>().enabled=true;
+            interactiveObject = null;
+            activInteratbl =! activInteratbl;
+        }
+    }
+
     private IEnumerator TransferringInteractiveObjects()
     {
         while(true)
         {
             interactiveObject.transform.position = hit;
-            if(Input.GetKeyDown(use) && activInteratbl == true)
+            if(Input.GetKeyDown(use) && activInteratbl && interactiveObject!=null)
             {
                 interactiveObject.returnTheOriginalMaterial();
+                numberLayer--;
+                interactiveObject.GetComponent<Collider>().enabled=true;
+                interactiveObject = null;
                 activInteratbl =! activInteratbl;
-                StopCoroutine(transferringInteractiveObjects);
+                yield break;
             }
-            yield return new WaitForEndOfFrame();
+            yield return null;
         }
     }
 }
