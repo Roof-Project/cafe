@@ -5,6 +5,8 @@ public class RayCasting : MonoBehaviour
 {
     [Header("Настройка управление взаимодействия")]
     public KeyCode use;
+    public KeyCode rotateToTheLeft;
+    public KeyCode rotateToTheRight;
 
     [Header("Настройка курсоров")]
     [SerializeField] private GameObject arm;
@@ -21,6 +23,7 @@ public class RayCasting : MonoBehaviour
     private static Vector3 hit;
     private bool activInteratbl=false;
     private static byte numberLayer;
+    [SerializeField] private float RotationSpeed;
     [SerializeField] Transform armController;
 
 
@@ -37,7 +40,6 @@ public class RayCasting : MonoBehaviour
         if(Physics.Raycast(ray, out _hit, 3f, interactiveObjectLayer[numberLayer]))
         {
             hit=_hit.point;
-            
             switch(_hit.collider.gameObject.tag)
             {
                 case "test":
@@ -66,6 +68,8 @@ public class RayCasting : MonoBehaviour
             cursor.SetActive(true);
         }
     }
+
+    //Обработка Взаимодействия Объектов
     private void ProcessingTheInteractionOfObjects(Collider _other)
     {
         if(Input.GetKey(use) && !activInteratbl)
@@ -90,31 +94,36 @@ public class RayCasting : MonoBehaviour
         }
     }
 
+    //Установка объекта
     private void ObjectInstallation()
     {
-        if(Input.GetKeyDown(use) && activInteratbl && interactiveObject!=null)
-        {
-            StopCoroutine(TransferringInteractiveObjects());
-            interactiveObject.returnTheOriginalMaterial();
-            numberLayer--;
-            interactiveObject.GetComponent<Collider>().enabled=true;
-            interactiveObject = null;
-            activInteratbl =! activInteratbl;
-        }
+        StopCoroutine(TransferringInteractiveObjects());
+        interactiveObject.returnTheOriginalMaterial();
+        numberLayer--;
+        interactiveObject.GetComponent<Collider>().enabled=true;
+        interactiveObject = null;
+        activInteratbl =! activInteratbl;
     }
 
+    //вращение объектов 
+    private void ObjectRotation()
+    {
+        if(Input.GetKey(rotateToTheLeft))
+            interactiveObject.transform.Rotate(0,RotationSpeed,0);
+        if(Input.GetKey(rotateToTheRight))
+            interactiveObject.transform.Rotate(0,-RotationSpeed,0);
+    }
+
+    //Передача интерактивных объектов
     private IEnumerator TransferringInteractiveObjects()
     {
         while(true)
         {
-            interactiveObject.transform.position = hit;
+            interactiveObject.transform.position = hit + new Vector3(0,0.5f,0);
+            ObjectRotation();
             if(Input.GetKeyDown(use) && activInteratbl && interactiveObject!=null)
             {
-                interactiveObject.returnTheOriginalMaterial();
-                numberLayer--;
-                interactiveObject.GetComponent<Collider>().enabled=true;
-                interactiveObject = null;
-                activInteratbl =! activInteratbl;
+                ObjectInstallation();
                 yield break;
             }
             yield return null;
