@@ -18,13 +18,18 @@ public class RayCasting : MonoBehaviour
 
     [Header("Настройка шейдера для взятых объектов")]
     [SerializeField] private Material shaderOfTheTakenObject;
-
+    
+    [Header("Места размещения стаканчика")]
+    [SerializeField] private GameObject[] placesOfGlasses;
     private InteractiveObject interactiveObject;
     private static Vector3 hit;
     private bool activInteratbl=false;
-    private static byte numberLayer;
+    [SerializeField] private bool constructionMode=false;//отвечает за режимы переноса объектов большой/маленький
+    private bool objectInHand=false;//предмет в руке
+    [SerializeField] private byte numberLayer = 2;
     [SerializeField] private float RotationSpeed;
     [SerializeField] Transform armController;
+    private Transform newObject;//храним объект который взяли
 
 
     void Update()
@@ -39,18 +44,69 @@ public class RayCasting : MonoBehaviour
         RaycastHit _hit;
         if(Physics.Raycast(ray, out _hit, 3f, interactiveObjectLayer[numberLayer]))
         {
-            hit=_hit.point;
-            switch(_hit.collider.gameObject.tag)
+            if(constructionMode==true)//условие для мебели
+                hit=_hit.point;
+                switch(_hit.collider.gameObject.tag)
+                {
+                    case "test":
+                        СursorСontroller(true);
+                        ProcessingTheInteractionOfObjects(_hit.collider);
+                    break;
+                }
+            if(constructionMode==false)//условие дял маленьких объектов
             {
-                case "test":
-                    СursorСontroller(true);
-                    ProcessingTheInteractionOfObjects(_hit.collider);
-                break;
+                СursorСontroller(true);
+                TakingAnObjectInHand(_hit.transform);
             }
         }
         else
         {
             СursorСontroller(false);
+        }
+    }
+    private void TakingAnObjectInHand(Transform _object)
+    {
+        if(Input.GetKeyDown(use))
+        {
+            if(objectInHand == false)
+            {
+                newObject = _object;
+                newObject.GetComponent<Collider>().isTrigger = true;
+                newObject.GetComponent<Rigidbody>().isKinematic = true;
+                newObject.position = armController.position;
+                newObject.transform.SetParent(armController.transform);
+                switch(newObject.gameObject.tag)
+                {
+                    case "glass":
+                        for(int i = 0; i <= placesOfGlasses.Length-1; i++)
+                        {
+                            placesOfGlasses[i].SetActive(true);
+                        }
+                    break;
+                }
+                objectInHand = true;
+                return;
+            }
+
+            if(objectInHand == true)
+            {
+                newObject.GetComponent<Collider>().isTrigger = false;
+                newObject.GetComponent<Rigidbody>().isKinematic = false;
+                newObject.position = _object.position;
+                newObject.SetParent(null);
+                newObject.rotation = Quaternion.Euler(0,0,0);
+                switch(_object.gameObject.tag)
+                {
+                    case "glass":
+                        for(int i = 0; i <= placesOfGlasses.Length-1; i++)
+                        {
+                            placesOfGlasses[i].SetActive(false);
+                        }
+                    break;
+                }
+                objectInHand = false;
+                return;
+            }
         }
     }
 
