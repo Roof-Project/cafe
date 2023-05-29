@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 public class RayCasting : MonoBehaviour
 {
     [Header("Настройка управление взаимодействия")]
@@ -12,6 +14,7 @@ public class RayCasting : MonoBehaviour
     [SerializeField] private GameObject arm;
     [SerializeField] private GameObject cursor;
     [SerializeField] private GameObject theScaleOfLoadingTakingAnItem;
+    //[SerializeField] private GameObject user;
 
     [Header("Настройка слоя интерактивных объектов")]
     [SerializeField] private LayerMask[] interactiveObjectLayer;
@@ -21,7 +24,10 @@ public class RayCasting : MonoBehaviour
     
     [Header("Места размещения стаканчика")]
     [SerializeField] private GameObject[] placesOfGlasses;
-    private InteractiveObject interactiveObject;
+    [Header("Места размещения лотка кофемолки")]
+    [SerializeField] private GameObject[] placesForTheTray;
+    private string objectTagInHand;
+    private GameObject interactiveObject;
     private static Vector3 hit;
     private bool activInteratbl=false;
     [SerializeField] private bool constructionMode=false;//отвечает за режимы переноса объектов большой/маленький
@@ -32,7 +38,7 @@ public class RayCasting : MonoBehaviour
     private Transform newObject;//храним объект который взяли
 
 
-    void Update()
+    private void Update()
     {
         CheckingObjectTags();
     }
@@ -53,7 +59,7 @@ public class RayCasting : MonoBehaviour
                         ProcessingTheInteractionOfObjects(_hit.collider);
                     break;
                 }
-            if(constructionMode==false)//условие дял маленьких объектов
+            if(constructionMode==false&&(objectTagInHand == _hit.collider.tag || objectTagInHand == null))//условие дял маленьких объектов
             {
                 СursorСontroller(true);
                 TakingAnObjectInHand(_hit.transform);
@@ -72,8 +78,10 @@ public class RayCasting : MonoBehaviour
             {
                 newObject = _object;
                 newObject.GetComponent<Collider>().isTrigger = true;
-                newObject.GetComponent<Rigidbody>().isKinematic = true;
+                if(newObject.GetComponent<Rigidbody>())
+                    newObject.GetComponent<Rigidbody>().isKinematic = true;
                 newObject.position = armController.position;
+                newObject.rotation = Quaternion.Euler(0,0,0);
                 newObject.transform.SetParent(armController.transform);
                 switch(newObject.gameObject.tag)
                 {
@@ -83,7 +91,14 @@ public class RayCasting : MonoBehaviour
                             placesOfGlasses[i].SetActive(true);
                         }
                     break;
+                    case "taracoffemolci":
+                        for(byte i = 0; i <= placesForTheTray.Length-1; i++)
+                        {
+                            placesForTheTray[i].SetActive(true);
+                        }
+                    break;
                 }
+                objectTagInHand = newObject.tag;
                 objectInHand = true;
                 return;
             }
@@ -91,10 +106,11 @@ public class RayCasting : MonoBehaviour
             if(objectInHand == true)
             {
                 newObject.GetComponent<Collider>().isTrigger = false;
-                newObject.GetComponent<Rigidbody>().isKinematic = false;
+                if(newObject.GetComponent<Rigidbody>())
+                    newObject.GetComponent<Rigidbody>().isKinematic = false;
+                newObject.SetParent(_object.transform.parent);
                 newObject.position = _object.position;
-                newObject.SetParent(null);
-                newObject.rotation = Quaternion.Euler(0,0,0);
+                newObject.rotation = _object.rotation;
                 switch(_object.gameObject.tag)
                 {
                     case "glass":
@@ -103,7 +119,14 @@ public class RayCasting : MonoBehaviour
                             placesOfGlasses[i].SetActive(false);
                         }
                     break;
+                    case "taracoffemolci":
+                        for(byte i = 0; i <= placesForTheTray.Length-1; i++)
+                        {
+                            placesForTheTray[i].SetActive(false);
+                        }
+                    break;
                 }
+                objectTagInHand = null;
                 objectInHand = false;
                 return;
             }
@@ -117,11 +140,13 @@ public class RayCasting : MonoBehaviour
         {
             arm.SetActive(true);
             cursor.SetActive(false);
+            //user.GetComponent<Animator>().Play("ECoursorAnimStart");
         }
         if(_activ==false)
         {
             arm.SetActive(false);
             cursor.SetActive(true);
+            //user.GetComponent<Animator>().Play("ECoursorAnimEnd");
         }
     }
 
@@ -135,8 +160,7 @@ public class RayCasting : MonoBehaviour
             if(theScaleOfLoadingTakingAnItem.GetComponent<Image>().fillAmount>=1)
             {
                 
-                interactiveObject = _other.GetComponent<InteractiveObject>();
-                interactiveObject.GetComponent<MeshRenderer>().material=shaderOfTheTakenObject;
+                interactiveObject = _other.gameObject;
                 StartCoroutine(TransferringInteractiveObjects());
                 numberLayer++;
                 theScaleOfLoadingTakingAnItem.GetComponent<Image>().fillAmount = 0;
@@ -154,7 +178,7 @@ public class RayCasting : MonoBehaviour
     private void ObjectInstallation()
     {
         StopCoroutine(TransferringInteractiveObjects());
-        interactiveObject.returnTheOriginalMaterial();
+        //interactiveObject.returnTheOriginalMaterial();
         numberLayer--;
         interactiveObject.GetComponent<Collider>().enabled=true;
         interactiveObject = null;
@@ -175,7 +199,7 @@ public class RayCasting : MonoBehaviour
     {
         while(true)
         {
-            interactiveObject.transform.position = hit + new Vector3(0,0.5f,0);
+            interactiveObject.transform.position = hit;
             ObjectRotation();
             if(Input.GetKeyDown(use) && activInteratbl && interactiveObject!=null)
             {
