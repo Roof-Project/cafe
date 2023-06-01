@@ -6,6 +6,7 @@ using TMPro;
 public class RayCasting : MonoBehaviour
 {
     [Header("Настройка управление взаимодействия")]
+    public KeyCode touch;
     public KeyCode use;
     public KeyCode rotateToTheLeft;
     public KeyCode rotateToTheRight;
@@ -14,7 +15,7 @@ public class RayCasting : MonoBehaviour
     [SerializeField] private GameObject arm;
     [SerializeField] private GameObject cursor;
     [SerializeField] private GameObject theScaleOfLoadingTakingAnItem;
-    //[SerializeField] private GameObject user;
+    [SerializeField] private GameObject user;
 
     [Header("Настройка слоя интерактивных объектов")]
     [SerializeField] private LayerMask[] interactiveObjectLayer;
@@ -23,9 +24,15 @@ public class RayCasting : MonoBehaviour
     [SerializeField] private Material shaderOfTheTakenObject;
     
     [Header("Места размещения стаканчика")]
-    [SerializeField] private GameObject[] placesOfGlasses;
+    [SerializeField] private Transform[] placesOfGlasses;
     [Header("Места размещения лотка кофемолки")]
-    [SerializeField] private GameObject[] placesForTheTray;
+    [SerializeField] private Transform[] placesForTheTray;
+    [Header("Маста для размещения крышки")]
+    [SerializeField] private Transform[] placeForTheLid;
+    [Header("Место для размещения покета с кофе")]
+    [SerializeField] private Transform[] placeForACoffeeBag;
+    [Header("Место для размещения турки")]
+    public static List<Transform> placeForTurks = new List<Transform>();
     private string objectTagInHand;
     private GameObject interactiveObject;
     private static Vector3 hit;
@@ -36,7 +43,6 @@ public class RayCasting : MonoBehaviour
     [SerializeField] private float RotationSpeed;
     [SerializeField] Transform armController;
     private Transform newObject;//храним объект который взяли
-
 
     private void Update()
     {
@@ -64,15 +70,25 @@ public class RayCasting : MonoBehaviour
                 СursorСontroller(true);
                 TakingAnObjectInHand(_hit.transform);
             }
+            return;
+        }
+        else if(Physics.Raycast(ray, out _hit, 3f, interactiveObjectLayer[3]))
+        {
+            СursorСontroller(true);
+            Hint(true);
+            UsingItems(_hit.collider);
+            return;
         }
         else
         {
             СursorСontroller(false);
+            Hint(false);
+            return;
         }
     }
     private void TakingAnObjectInHand(Transform _object)
     {
-        if(Input.GetKeyDown(use))
+        if(Input.GetKeyDown(touch))
         {
             if(objectInHand == false)
             {
@@ -88,13 +104,31 @@ public class RayCasting : MonoBehaviour
                     case "glass":
                         for(int i = 0; i <= placesOfGlasses.Length-1; i++)
                         {
-                            placesOfGlasses[i].SetActive(true);
+                            placesOfGlasses[i].gameObject.SetActive(true);
                         }
                     break;
                     case "taracoffemolci":
                         for(byte i = 0; i <= placesForTheTray.Length-1; i++)
                         {
-                            placesForTheTray[i].SetActive(true);
+                            placesForTheTray[i].gameObject.SetActive(true);
+                        }
+                    break;
+                    case "cuplid":
+                        for(byte i = 0; i <= placeForTheLid.Length-1; i++)
+                        {
+                            placeForTheLid[i].gameObject.SetActive(true);
+                        }
+                    break;
+                    case "coffePac":
+                        for(byte i = 0; i <= placeForACoffeeBag.Length-1; i++)
+                        {
+                            placeForACoffeeBag[i].gameObject.SetActive(true);
+                        }
+                    break;
+                    case "turka":
+                        for(byte i = 0; i <= placeForTurks.Count-1; i++)
+                        {
+                            placeForTurks[i].gameObject.SetActive(true);
                         }
                     break;
                 }
@@ -102,7 +136,6 @@ public class RayCasting : MonoBehaviour
                 objectInHand = true;
                 return;
             }
-
             if(objectInHand == true)
             {
                 newObject.GetComponent<Collider>().isTrigger = false;
@@ -116,13 +149,31 @@ public class RayCasting : MonoBehaviour
                     case "glass":
                         for(int i = 0; i <= placesOfGlasses.Length-1; i++)
                         {
-                            placesOfGlasses[i].SetActive(false);
+                            placesOfGlasses[i].gameObject.SetActive(false);
                         }
                     break;
                     case "taracoffemolci":
                         for(byte i = 0; i <= placesForTheTray.Length-1; i++)
                         {
-                            placesForTheTray[i].SetActive(false);
+                            placesForTheTray[i].gameObject.SetActive(false);
+                        }
+                    break;
+                    case "cuplid":
+                        for(byte i = 0; i <= placeForTheLid.Length-1; i++)
+                        {
+                            placeForTheLid[i].gameObject.SetActive(false);
+                        }
+                    break;
+                    case "coffePac":
+                        for(byte i = 0; i <= placeForACoffeeBag.Length-1; i++)
+                        {
+                            placeForACoffeeBag[i].gameObject.SetActive(false);
+                        }
+                    break;
+                    case "turka":
+                        for(byte i = 0; i <= placeForTurks.Count-1; i++)
+                        {
+                            placeForTurks[i].gameObject.SetActive(false);
                         }
                     break;
                 }
@@ -130,9 +181,31 @@ public class RayCasting : MonoBehaviour
                 objectInHand = false;
                 return;
             }
+        } 
+    }
+
+    private void UsingItems(Collider _object)
+    {
+        if(Input.GetKeyDown(use))
+        {
+            switch(_object.tag)
+            {
+                case "plateButton": 
+                    Stove.TurningOnAndOffTheStove();
+                break;
+            }
+            return;
         }
     }
 
+
+    private void Hint(bool _activ)
+    {
+        if(_activ==true)
+            user.GetComponent<Animator>().Play("ECoursorAnimStart");
+        if(_activ==false)
+            user.GetComponent<Animator>().Play("ECoursorAnimEnd");
+    }
     //регулирует курсор в зависимосте от объекта на который мы навелись 
     private void СursorСontroller(bool _activ)
     {
@@ -140,20 +213,20 @@ public class RayCasting : MonoBehaviour
         {
             arm.SetActive(true);
             cursor.SetActive(false);
-            //user.GetComponent<Animator>().Play("ECoursorAnimStart");
+            return;
         }
         if(_activ==false)
         {
             arm.SetActive(false);
             cursor.SetActive(true);
-            //user.GetComponent<Animator>().Play("ECoursorAnimEnd");
+            return;
         }
     }
 
     //Обработка Взаимодействия Объектов
     private void ProcessingTheInteractionOfObjects(Collider _other)
     {
-        if(Input.GetKey(use) && !activInteratbl)
+        if(Input.GetKey(touch) && !activInteratbl)
         {
             
             theScaleOfLoadingTakingAnItem.GetComponent<Image>().fillAmount += Time.deltaTime/2.5f;
@@ -201,7 +274,7 @@ public class RayCasting : MonoBehaviour
         {
             interactiveObject.transform.position = hit;
             ObjectRotation();
-            if(Input.GetKeyDown(use) && activInteratbl && interactiveObject!=null)
+            if(Input.GetKeyDown(touch) && activInteratbl && interactiveObject!=null)
             {
                 ObjectInstallation();
                 yield break;

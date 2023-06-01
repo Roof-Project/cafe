@@ -7,6 +7,10 @@ TagManager:
   - test
   - glass
   - taracoffemolci
+  - cuplid
+  - coffePac
+  - turka
+  - plateButton
   layers:
   - Default
   - TransparentFX
@@ -16,7 +20,7 @@ TagManager:
   - UI
   - StaticObject
   - SmallObject
-  - 
+  - UsingItems
   - 
   - 
   - 
