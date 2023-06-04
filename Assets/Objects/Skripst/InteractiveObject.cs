@@ -4,8 +4,5 @@ using UnityEngine;
 
 public class InteractiveObject : MonoBehaviour
 {
-    private void Start()
-    {
-        
-    }
+    public bool interactiveObjectInPlace;
 }

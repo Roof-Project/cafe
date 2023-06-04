@@ -11,6 +11,7 @@ TagManager:
   - coffePac
   - turka
   - plateButton
+  - tapHandle
   layers:
   - Default
   - TransparentFX

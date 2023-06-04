@@ -26,11 +26,11 @@ public class RayCasting : MonoBehaviour
     [Header("Места размещения стаканчика")]
     [SerializeField] private Transform[] placesOfGlasses;
     [Header("Места размещения лотка кофемолки")]
-    [SerializeField] private Transform[] placesForTheTray;
+    public static List<Transform> placesForTheTray = new List<Transform>();
     [Header("Маста для размещения крышки")]
     [SerializeField] private Transform[] placeForTheLid;
     [Header("Место для размещения покета с кофе")]
-    [SerializeField] private Transform[] placeForACoffeeBag;
+    public static List<Transform> placeForACoffeeBag = new List<Transform>();
     [Header("Место для размещения турки")]
     public static List<Transform> placeForTurks = new List<Transform>();
     private string objectTagInHand;
@@ -72,7 +72,7 @@ public class RayCasting : MonoBehaviour
             }
             return;
         }
-        else if(Physics.Raycast(ray, out _hit, 3f, interactiveObjectLayer[3]))
+        if(Physics.Raycast(ray, out _hit, 3f, interactiveObjectLayer[3]))
         {
             СursorСontroller(true);
             Hint(true);
@@ -108,27 +108,28 @@ public class RayCasting : MonoBehaviour
                         }
                     break;
                     case "taracoffemolci":
-                        for(byte i = 0; i <= placesForTheTray.Length-1; i++)
+                        for(byte i = 0; i <= placesForTheTray.Count -1; i++)
                         {
                             placesForTheTray[i].gameObject.SetActive(true);
                         }
                     break;
                     case "cuplid":
-                        for(byte i = 0; i <= placeForTheLid.Length-1; i++)
+                        for(byte i = 0; i <= placeForTheLid.Length -1; i++)
                         {
                             placeForTheLid[i].gameObject.SetActive(true);
                         }
                     break;
                     case "coffePac":
-                        for(byte i = 0; i <= placeForACoffeeBag.Length-1; i++)
+                        for(byte i = 0; i <= placeForACoffeeBag.Count -1; i++)
                         {
                             placeForACoffeeBag[i].gameObject.SetActive(true);
                         }
                     break;
                     case "turka":
-                        for(byte i = 0; i <= placeForTurks.Count-1; i++)
+                        for(byte i = 0; i <= placeForTurks.Count -1; i++)
                         {
                             placeForTurks[i].gameObject.SetActive(true);
+                            placeForTurks[i].GetComponent<InteractiveObject>().interactiveObjectInPlace = false;
                         }
                     break;
                 }
@@ -144,6 +145,7 @@ public class RayCasting : MonoBehaviour
                 newObject.SetParent(_object.transform.parent);
                 newObject.position = _object.position;
                 newObject.rotation = _object.rotation;
+                _object.GetComponent<InteractiveObject>().interactiveObjectInPlace = true;
                 switch(_object.gameObject.tag)
                 {
                     case "glass":
@@ -153,7 +155,7 @@ public class RayCasting : MonoBehaviour
                         }
                     break;
                     case "taracoffemolci":
-                        for(byte i = 0; i <= placesForTheTray.Length-1; i++)
+                        for(byte i = 0; i <= placesForTheTray.Count -1; i++)
                         {
                             placesForTheTray[i].gameObject.SetActive(false);
                         }
@@ -165,7 +167,7 @@ public class RayCasting : MonoBehaviour
                         }
                     break;
                     case "coffePac":
-                        for(byte i = 0; i <= placeForACoffeeBag.Length-1; i++)
+                        for(byte i = 0; i <= placeForACoffeeBag.Count -1; i++)
                         {
                             placeForACoffeeBag[i].gameObject.SetActive(false);
                         }
@@ -193,6 +195,9 @@ public class RayCasting : MonoBehaviour
                 case "plateButton": 
                     Stove.TurningOnAndOffTheStove();
                 break;
+                case "tapHandle":
+                    Crane.UseTheFaucet();
+                break;
             }
             return;
         }
@@ -209,18 +214,19 @@ public class RayCasting : MonoBehaviour
     //регулирует курсор в зависимосте от объекта на который мы навелись 
     private void СursorСontroller(bool _activ)
     {
-        if(_activ==true)
+        if(_activ==true && arm.activeSelf==false)
         {
             arm.SetActive(true);
             cursor.SetActive(false);
             return;
         }
-        if(_activ==false)
+        if(_activ==false && arm.activeSelf==true)
         {
             arm.SetActive(false);
             cursor.SetActive(true);
             return;
         }
+        return;
     }
 
     //Обработка Взаимодействия Объектов
