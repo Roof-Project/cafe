@@ -7,6 +7,7 @@ public class Crane : MonoBehaviour
     private static Animator animatedPen;
     private static Transform craneObj;
     private int numberInTheListOfPlacesToPlaceObjects;
+    private string nameOfTheObjectInTheArray;
     public static InteractiveObject interactiveObject;
     private static bool _activ;
     private static Crane crane;
@@ -15,6 +16,7 @@ public class Crane : MonoBehaviour
     {
         numberInTheListOfPlacesToPlaceObjects = RayCasting.placeForTurks.Count;
         RayCasting.placeForTurks.Add(transform.GetChild(4));
+        nameOfTheObjectInTheArray = RayCasting.placeForTurks[numberInTheListOfPlacesToPlaceObjects].name;
         interactiveObject = transform.GetChild(4).GetComponent<InteractiveObject>();
         animatedPen = transform.GetChild(2).GetComponent<Animator>();
         craneObj = transform;

@@ -33,12 +33,14 @@ public class RayCasting : MonoBehaviour
     public static List<Transform> placeForACoffeeBag = new List<Transform>();
     [Header("Место для размещения турки")]
     public static List<Transform> placeForTurks = new List<Transform>();
+
     private string objectTagInHand;
     private GameObject interactiveObject;
     private static Vector3 hit;
     private bool activInteratbl=false;
     [SerializeField] private bool constructionMode=false;//отвечает за режимы переноса объектов большой/маленький
     private bool objectInHand=false;//предмет в руке
+    private bool coffeeGrinderOnStage;
     [SerializeField] private byte numberLayer = 2;
     [SerializeField] private float RotationSpeed;
     [SerializeField] Transform armController;
@@ -47,6 +49,11 @@ public class RayCasting : MonoBehaviour
     private void Update()
     {
         CheckingObjectTags();
+    }
+    private void Awake() 
+    {
+        if(GameObject.FindObjectOfType<Coffemolca>())
+            coffeeGrinderOnStage = true;
     }
 
     //пускает лучи пока не пройдёт проверка по тегу 
@@ -105,25 +112,31 @@ public class RayCasting : MonoBehaviour
                         for(int i = 0; i <= placesOfGlasses.Length-1; i++)
                         {
                             placesOfGlasses[i].gameObject.SetActive(true);
+                            placesOfGlasses[i].GetComponent<InteractiveObject>().interactiveObjectInPlace = false;
                         }
                     break;
                     case "taracoffemolci":
                         for(byte i = 0; i <= placesForTheTray.Count -1; i++)
                         {
                             placesForTheTray[i].gameObject.SetActive(true);
+                            placesForTheTray[i].GetComponent<InteractiveObject>().interactiveObjectInPlace = false;
                         }
                     break;
                     case "cuplid":
                         for(byte i = 0; i <= placeForTheLid.Length -1; i++)
                         {
                             placeForTheLid[i].gameObject.SetActive(true);
+                            placeForTheLid[i].GetComponent<InteractiveObject>().interactiveObjectInPlace = false;
                         }
                     break;
                     case "coffePac":
                         for(byte i = 0; i <= placeForACoffeeBag.Count -1; i++)
                         {
                             placeForACoffeeBag[i].gameObject.SetActive(true);
+                            placeForACoffeeBag[i].GetComponent<InteractiveObject>().interactiveObjectInPlace = false;
                         }
+                        if(coffeeGrinderOnStage)
+                            Coffemolca.CheckingThePresenceOfTheCoffeeGrinderTray();
                     break;
                     case "turka":
                         for(byte i = 0; i <= placeForTurks.Count -1; i++)
