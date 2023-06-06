@@ -2,10 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class Turca : MonoBehaviour
 {
-    private static Slider waterSlider;
+    private static Slider slider;
+    private static GameObject waterUi;
+    private static TextMeshProUGUI textMeshProUGUI;
     public static bool water;
     public static bool coffee;
     public static float _water;
@@ -15,19 +18,35 @@ public class Turca : MonoBehaviour
     
     private void Start() 
     {
-        waterSlider = transform.GetChild(1).GetChild(0).GetComponent<Slider>();
-        StartCoroutine(UiUpdater());    
+        waterUi = transform.GetChild(1).GetChild(0).gameObject;
+        slider = waterUi.transform.GetChild(0).GetComponent<Slider>();
+        textMeshProUGUI = waterUi.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+        StartCoroutine(UiUpdater()); 
     }
 
-    public static void WaterFilling()
+    public void WaterFilling()
     {
-        waterSlider.gameObject.SetActive(true);
+        if(waterUi.activeSelf==false)
+            waterUi.gameObject.SetActive(true);
+        if(textMeshProUGUI.text != "вода")
+            textMeshProUGUI.text = "вода";
     }
     private IEnumerator UiUpdater()
     {
         while(true)
         {
-            waterSlider.transform.LookAt(Camera.main.transform.position);
+            slider.transform.parent.LookAt(Camera.main.transform.position);
+            if(Crane.turkOnTheSpot && slider.value < slider.maxValue)
+            {
+                if(water == false)
+                {
+                    WaterFilling();
+                    water = true;
+                }
+                _water += 0.2f;
+                slider.value = _water;
+                yield return new WaitForSeconds(0.1f);
+            }
             yield return null;
         }
     } 

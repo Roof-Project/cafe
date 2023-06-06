@@ -9,7 +9,9 @@ public class Crane : MonoBehaviour
     private int numberInTheListOfPlacesToPlaceObjects;
     private string nameOfTheObjectInTheArray;
     public static InteractiveObject interactiveObject;
+    private static Turca turca;
     private static bool _activ;
+    public static bool turkOnTheSpot;
     private static Crane crane;
 
     private void Start() 
@@ -45,8 +47,17 @@ public class Crane : MonoBehaviour
         {
             if(interactiveObject.interactiveObjectInPlace && _activ)
             {
-                Debug.Log("q");
+                if(turkOnTheSpot == false)
+                {
+                    turkOnTheSpot = true;
+                    yield return null;
+                }
                 yield return null;
+            }
+            else 
+            {
+                if(turkOnTheSpot)
+                    turkOnTheSpot = false;    
             }
             yield return null;
         }
