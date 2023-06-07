@@ -21,7 +21,7 @@ public class Turca : MonoBehaviour
         waterUi = transform.GetChild(1).GetChild(0).gameObject;
         slider = waterUi.transform.GetChild(0).GetComponent<Slider>();
         textMeshProUGUI = waterUi.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
-        StartCoroutine(UiUpdater()); 
+        //StartCoroutine(UiUpdater()); 
     }
 
     public void WaterFilling()
