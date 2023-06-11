@@ -43,7 +43,8 @@ public class RayCasting : MonoBehaviour
     private bool coffeeGrinderOnStage;
     [SerializeField] private byte numberLayer = 2;
     [SerializeField] private float RotationSpeed;
-    [SerializeField] Transform armController;
+    [SerializeField] private Transform armController;
+    [SerializeField] private GameObject player; 
     private Transform newObject;//храним объект который взяли
 
     private void Update()
@@ -184,6 +185,8 @@ public class RayCasting : MonoBehaviour
                         {
                             placeForACoffeeBag[i].gameObject.SetActive(false);
                         }
+                        if(coffeeGrinderOnStage)
+                            Coffemolca.UsingACoffeeGrinder(player);
                     break;
                     case "turka":
                         for(byte i = 0; i <= placeForTurks.Count-1; i++)

@@ -9,7 +9,7 @@ public class Crane : MonoBehaviour
     private int numberInTheListOfPlacesToPlaceObjects;
     private string nameOfTheObjectInTheArray;
     public static InteractiveObject interactiveObject;
-    private static Turca turca;
+    //private static Turca turca;
     private static bool _activ;
     public static bool turkOnTheSpot;
     private static Crane crane;
@@ -32,6 +32,7 @@ public class Crane : MonoBehaviour
         {
             animatedPen.Play("cranOn");
             crane.StartCoroutine(Filling());
+
             return;
         }
         else if(!_activ)
@@ -45,21 +46,31 @@ public class Crane : MonoBehaviour
     {
         while(true)
         {
-            if(interactiveObject.interactiveObjectInPlace && _activ)
+            if(_activ)
             {
-                if(turkOnTheSpot == false)
+                if(interactiveObject.interactiveObjectInPlace && Turca.TheTurkIsEmpty)
                 {
-                    turkOnTheSpot = true;
-                    yield return null;
+                    if(turkOnTheSpot == false)
+                    {
+                        turkOnTheSpot = true;             
+                    }
+                    Turca.FillingTurks();
                 }
-                yield return null;
+                else if(interactiveObject.interactiveObjectInPlace ==false || Turca.TheTurkIsEmpty == false)
+                {
+                    if(turkOnTheSpot)
+                    {
+                        turkOnTheSpot = false;
+                    }
+                    //партиклы
+
+                    yield break;
+                }
             }
-            else 
-            {
-                if(turkOnTheSpot)
-                    turkOnTheSpot = false;    
-            }
-            yield return null;
+            else
+                yield break;
+            
+            yield return new WaitForSeconds(0.1f);
         }
     }
 }
