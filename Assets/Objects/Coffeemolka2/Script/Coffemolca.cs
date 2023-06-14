@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class Coffemolca : MonoBehaviour
 {
-    private int numberInTheListOfPlacesToPlaceObjectsCoffeeBag;
-    private int numberInTheListOfPlacesToPlaceObjectsTrray;
-    private string nameOfTheObjectInTheArrayCoffeeBag;
-    private string nameOfTheObjectInTheArrayTrray;
     public static InteractiveObject InteractiveObjectCoffeeBag;
     public static InteractiveObject InteractiveObjectTrray;
     private static Camera Camera;
@@ -17,11 +13,7 @@ public class Coffemolca : MonoBehaviour
 
     private void Start() 
     {
-        numberInTheListOfPlacesToPlaceObjectsCoffeeBag = RayCasting.placeForACoffeeBag.Count;
-        numberInTheListOfPlacesToPlaceObjectsTrray = RayCasting.placesForTheTray.Count;
         CoffemolcaPrefab = transform;
-        RayCasting.placeForACoffeeBag.Add(transform.GetChild(3));
-        RayCasting.placesForTheTray.Add(transform.GetChild(2));
         InteractiveObjectCoffeeBag = transform.GetChild(3).GetComponent<InteractiveObject>();
         InteractiveObjectTrray = transform.GetChild(2).GetComponent<InteractiveObject>();
         Camera = transform.GetChild(5).GetComponent<Camera>();

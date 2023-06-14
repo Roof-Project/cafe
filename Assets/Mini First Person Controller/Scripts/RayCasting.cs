@@ -22,17 +22,31 @@ public class RayCasting : MonoBehaviour
 
     [Header("Настройка шейдера для взятых объектов")]
     [SerializeField] private Material shaderOfTheTakenObject;
-    
-    [Header("Места размещения стаканчика")]
-    [SerializeField] private Transform[] placesOfGlasses;
-    [Header("Места размещения лотка кофемолки")]
-    public static List<Transform> placesForTheTray = new List<Transform>();
-    [Header("Маста для размещения крышки")]
-    [SerializeField] private Transform[] placeForTheLid;
-    [Header("Место для размещения покета с кофе")]
-    public static List<Transform> placeForACoffeeBag = new List<Transform>();
-    [Header("Место для размещения турки")]
-    public static List<Transform> placeForTurks = new List<Transform>();
+
+    //делегаты стаканчик
+    public delegate void placesOfGlasses();//место стаканчика
+    public static event placesOfGlasses TakingACup;//взять
+    public static event placesOfGlasses PutTheCupDown;
+
+    //делегаты лотка кофемолки
+    public delegate void placeOfTheCoffeeGrinderTray();//место установки Поддона Кофемолки
+    public static event placeOfTheCoffeeGrinderTray TakeTheCoffeeGrinderTray;//взять
+    public static event placeOfTheCoffeeGrinderTray InstallTheCoffeeGrinderTray;
+
+    //место для установки крышки
+    public delegate void placeToPlaceTheLid();//место для размещения крышки
+    public static event placeToPlaceTheLid TookTheLid;//взять
+    public static event placeToPlaceTheLid InstallTheCover;
+
+    //Место для размещения покета с кофе
+    public delegate void aPlaceToPlaceAPocketWithCoffee();
+    public static event aPlaceToPlaceAPocketWithCoffee TakeABagOfCoffee;
+    public static event aPlaceToPlaceAPocketWithCoffee InstallACoffeePackage;
+
+    //Место для размещения турки
+    public delegate void placeToPlaceTurks();
+    public static placeToPlaceTurks CaptureOfTurki;//взятие турки
+    public static placeToPlaceTurks InstallationTurks;
 
     private string objectTagInHand;
     private GameObject interactiveObject;
@@ -96,6 +110,7 @@ public class RayCasting : MonoBehaviour
     }
     private void TakingAnObjectInHand(Transform _object)
     {
+        //взятие объекта
         if(Input.GetKeyDown(touch))
         {
             if(objectInHand == false)
@@ -110,47 +125,29 @@ public class RayCasting : MonoBehaviour
                 switch(newObject.gameObject.tag)
                 {
                     case "glass":
-                        for(int i = 0; i <= placesOfGlasses.Length-1; i++)
-                        {
-                            placesOfGlasses[i].gameObject.SetActive(true);
-                            placesOfGlasses[i].GetComponent<InteractiveObject>().interactiveObjectInPlace = false;
-                        }
+                        TakingACup?.Invoke();
                     break;
                     case "taracoffemolci":
-                        for(byte i = 0; i <= placesForTheTray.Count -1; i++)
-                        {
-                            placesForTheTray[i].gameObject.SetActive(true);
-                            placesForTheTray[i].GetComponent<InteractiveObject>().interactiveObjectInPlace = false;
-                        }
+                        TakeTheCoffeeGrinderTray?.Invoke();
                     break;
                     case "cuplid":
-                        for(byte i = 0; i <= placeForTheLid.Length -1; i++)
-                        {
-                            placeForTheLid[i].gameObject.SetActive(true);
-                            placeForTheLid[i].GetComponent<InteractiveObject>().interactiveObjectInPlace = false;
-                        }
+                        TookTheLid?.Invoke();
                     break;
                     case "coffePac":
-                        for(byte i = 0; i <= placeForACoffeeBag.Count -1; i++)
-                        {
-                            placeForACoffeeBag[i].gameObject.SetActive(true);
-                            placeForACoffeeBag[i].GetComponent<InteractiveObject>().interactiveObjectInPlace = false;
-                        }
+                        TakeABagOfCoffee?.Invoke();
                         if(coffeeGrinderOnStage)
                             Coffemolca.CheckingThePresenceOfTheCoffeeGrinderTray();
                     break;
                     case "turka":
-                        for(byte i = 0; i <= placeForTurks.Count -1; i++)
-                        {
-                            placeForTurks[i].gameObject.SetActive(true);
-                            placeForTurks[i].GetComponent<InteractiveObject>().interactiveObjectInPlace = false;
-                        }
+                        CaptureOfTurki?.Invoke();
                     break;
                 }
                 objectTagInHand = newObject.tag;
                 objectInHand = true;
                 return;
             }
+
+            //установка объекта
             if(objectInHand == true)
             {
                 newObject.GetComponent<Collider>().isTrigger = false;
@@ -163,36 +160,22 @@ public class RayCasting : MonoBehaviour
                 switch(_object.gameObject.tag)
                 {
                     case "glass":
-                        for(int i = 0; i <= placesOfGlasses.Length-1; i++)
-                        {
-                            placesOfGlasses[i].gameObject.SetActive(false);
-                        }
+                        
+                        PutTheCupDown?.Invoke();
                     break;
                     case "taracoffemolci":
-                        for(byte i = 0; i <= placesForTheTray.Count -1; i++)
-                        {
-                            placesForTheTray[i].gameObject.SetActive(false);
-                        }
+                        InstallTheCoffeeGrinderTray?.Invoke();
                     break;
                     case "cuplid":
-                        for(byte i = 0; i <= placeForTheLid.Length-1; i++)
-                        {
-                            placeForTheLid[i].gameObject.SetActive(false);
-                        }
+                        InstallTheCoffeeGrinderTray?.Invoke();
                     break;
                     case "coffePac":
-                        for(byte i = 0; i <= placeForACoffeeBag.Count -1; i++)
-                        {
-                            placeForACoffeeBag[i].gameObject.SetActive(false);
-                        }
+                        InstallACoffeePackage?.Invoke();
                         if(coffeeGrinderOnStage)
                             Coffemolca.UsingACoffeeGrinder(player);
                     break;
                     case "turka":
-                        for(byte i = 0; i <= placeForTurks.Count-1; i++)
-                        {
-                            placeForTurks[i].gameObject.SetActive(false);
-                        }
+                        InstallationTurks?.Invoke();
                     break;
                 }
                 objectTagInHand = null;
