@@ -4,24 +4,18 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - test
-  - glass
-  - taracoffemolci
-  - cuplid
-  - coffePac
-  - turka
-  - plateButton
-  - tapHandle
+  - coffee package
+  - place of the coffee package
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - InteractiveObjects
+  - 
   - Water
   - UI
-  - StaticObject
-  - SmallObject
-  - UsingItems
+  - Interactive Object
+  - A place for an interactive object
+  - 
   - 
   - 
   - 
