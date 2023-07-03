@@ -29,12 +29,5 @@ public class InteractiveObject : MonoBehaviour
         colliderObject.isTrigger = false;
         rigidbodyObject.isKinematic = false;
     }
-    private void OnMouseEnter() 
-    {
-        Debug.Log("!");
-    }
-    private void OnMouseExit() 
-    {
-        Debug.Log("!!");
-    }
+    
 }
