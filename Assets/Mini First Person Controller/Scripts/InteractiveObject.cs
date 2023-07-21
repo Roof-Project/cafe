@@ -4,27 +4,21 @@ using UnityEngine;
 
 public class InteractiveObject : MonoBehaviour
 {
-    private Collider colliderObject;
-    
-    private Rigidbody rigidbodyObject;
-
-    private GameObject openObject;
-    private GameObject closedObject;
+    private Collider colliderObject;//колайдер объекта
+    private Rigidbody rigidbodyObject;//физика объекта
 
     private void Start() 
     {
         colliderObject = GetComponent<Collider>();
         rigidbodyObject = GetComponent<Rigidbody>();
-        //closedObject = transform.GetChild(0).gameObject;
-        //openObject = transform.GetChild(1).gameObject;    
     }
 
-    public void TakingObject()
+    public void TakingObject()//взяли объект
     {
         colliderObject.isTrigger = true;
         rigidbodyObject.isKinematic = true;
     }
-    public void PutAnObject()
+    public void PutAnObject()//положили объект
     {
         colliderObject.isTrigger = false;
         rigidbodyObject.isKinematic = false;

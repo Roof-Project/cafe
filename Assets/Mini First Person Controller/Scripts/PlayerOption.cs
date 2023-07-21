@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class PlayerOption : MonoBehaviour
 {
+    [Header("Слои для взаимодействий с объектами")]
     [SerializeField] private LayerMask[] layerMasks;
 
     [Header("Курсор")]
@@ -12,23 +13,26 @@ public class PlayerOption : MonoBehaviour
 
 
     [Header("Управление")]
-    public KeyCode takeAnObjectkey;
-    public KeyCode useObjectkey;
-    public KeyCode putAnObjectkey;
-    public KeyCode turnTheObjectToTheLeft;
-    public KeyCode turnTheObjectToTheRight;
+    public KeyCode takeAnObjectkey;//взять объект
+    public KeyCode useObjectkey;//использовать объект
+    public KeyCode putAnObjectkey;//поставить объект
+    public KeyCode turnTheObjectToTheLeft;//повернуть объект в лево
+    public KeyCode turnTheObjectToTheRight;//повернуть объект в право
 
-    private Transform armTransform;
+    private Transform armTransform;//трансформ руки
     [SerializeField] private Transform objectInHand;
 
-    private bool checkingForTheTakenObject = false;
-    private bool putAnObject = false;
-    private bool constructionMode = true;//режим строительства
+    private bool checkingForTheTakenObject = false;//проверка на взятый объект
+    private bool putAnObject = false;//объект установлен на землю
+    private bool constructionMode = false;//режим строительства
     private bool liftingAHeavyObject = false;//проверка на задержиную кнопку при взятии большого объекта 
     private float timer; 
 
-    public delegate void toTake();
-    public event toTake takeABagOfCoffee;
+    public delegate void toTake();//подсветка объектов
+    public event toTake OnHighlightTheCoffeeBag;//подстветка пакета кофе
+    public event toTake RemoveTheBacklightOfTheCoffeePackage;//убрать подсветку пакета кофе
+
+
     void Start()
     {
         armTransform = transform.GetChild(0).GetChild(0);
@@ -42,69 +46,90 @@ public class PlayerOption : MonoBehaviour
 
     private void InteractionWithSmallObjects()//взаимодействие с маленькими объектами
     {
-        if(constructionMode == false)
+        if(constructionMode) return;//проверка на режим строительства
+        
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        
+        if(Physics.Raycast(ray, out hit, 4, layerMasks[0]) && checkingForTheTakenObject == false)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
             //взять объект
-            if(Physics.Raycast(ray, out hit, 4, layerMasks[0]) && checkingForTheTakenObject == false)
+            if(Input.GetKeyDown(takeAnObjectkey))
             {
-                if(Input.GetKeyDown(takeAnObjectkey))
+                objectInHand = hit.transform;
+                Tacing();
+                switch(objectInHand.tag)
                 {
-                    objectInHand = hit.transform;
-                    Tacing();
-                    checkingForTheTakenObject = true;
-                    switch(hit.collider.tag)
+                    case "CoffeePackage":
+                        OnHighlightTheCoffeeBag?.Invoke();
+                    break;
+                }
+                return;
+            }  
+            //использовать объект
+            if(Input.GetKeyDown(useObjectkey))
+            {
+                if(hit.transform.GetComponent<CoffeePackage>().packagingCondition)
+                {
+                    switch(hit.transform.tag)
                     {
                         case "CoffeePackage":
-                            takeABagOfCoffee?.Invoke();
+                            hit.transform.GetComponent<CoffeePackage>().UnpackThePackage();
                         break;
                     }
                     return;
-                }    
-            }
-
-            //установить объект
-            if(Physics.Raycast(ray, out hit, 4, layerMasks[1]) && checkingForTheTakenObject)
-            {
-                if(Input.GetKeyDown(takeAnObjectkey))
+                }
+                if(hit.transform.GetComponent<CoffeePackage>().packagingCondition == false)
                 {
-                    //под вопросом
-                    Put();
+                    switch(hit.transform.tag)
+                    {
+                        case "CoffeePackage":
+                            hit.transform.GetComponent<CoffeePackage>().PackAPackage();
+                        break;
+                    }
+                    return;
+                }
+            }  
+        }
+        
+        //положить объект 
+        if(Input.GetKeyDown(putAnObjectkey) && checkingForTheTakenObject && objectInHand != null && putAnObject == false)
+        {
+            Debug.Log("!!1");
+            objectInHand.parent = null;
+            putAnObject = true;
+            objectInHand.rotation = Quaternion.Euler(0,0,0);
+            return;
+        }
 
-                }    
-            }
+        if(Physics.Raycast(ray, out hit, 4, layerMasks[2]) && checkingForTheTakenObject &&  putAnObject)
+        {
+            objectInHand.position = hit.point;
 
-            //положить объект 
-            if(Input.GetKeyDown(putAnObjectkey) && checkingForTheTakenObject && objectInHand != null && putAnObject == false)
+            //вращять объект на лево
+            if(Input.GetKey(turnTheObjectToTheLeft))
             {
-                objectInHand.parent = null;
-                putAnObject = true;
-                objectInHand.rotation = Quaternion.Euler(0,0,0);
+                objectInHand.Rotate(0,1,0);
+            }
+            //вращять на право
+            if(Input.GetKey(turnTheObjectToTheRight))
+            {
+                objectInHand.Rotate(0,-1,0);
+            }
+            //оставить объект на земле
+            if(Input.GetKeyDown(takeAnObjectkey))
+            {
+                Put();
+                putAnObject = false;
                 return;
             }
-            if(Physics.Raycast(ray, out hit, 4, layerMasks[2]) && checkingForTheTakenObject &&  putAnObject)
+            // снова взять объект
+            if(Input.GetKeyDown(putAnObjectkey))
             {
-                objectInHand.position = hit.point;
-
-                if(Input.GetKey(turnTheObjectToTheLeft))
-                {
-                    objectInHand.Rotate(0,1,0);
-                }
-                if(Input.GetKey(turnTheObjectToTheRight))
-                {
-                    objectInHand.Rotate(0,-1,0);
-                }
-                if(Input.GetKeyDown(takeAnObjectkey))
-                {
-                    Put();
-                    putAnObject = false;
-                }
-                if(Input.GetKeyDown(putAnObjectkey))
-                {
-                    Tacing();
-                    putAnObject = false;
-                }
+                Debug.Log("!!!1");
+                Tacing();
+                putAnObject = false;
+                return;
             }
         }
     }
@@ -112,86 +137,95 @@ public class PlayerOption : MonoBehaviour
 
     private void InteractionWithLargeObjects()
     {
-        if(constructionMode)
+        if(constructionMode == false) return;//проверка на режим строительства
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if(Physics.Raycast(ray, out hit, 4, layerMasks[3]) && checkingForTheTakenObject == false)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if(Physics.Raycast(ray, out hit, 4, layerMasks[3]) && checkingForTheTakenObject == false)
+            //подбор тяжёлого объекта
+            if(Input.GetKeyDown(takeAnObjectkey))
             {
-                if(Input.GetKeyDown(takeAnObjectkey))
-                {
-                    liftingAHeavyObject = true;
-                }
-                if(Input.GetKeyUp(takeAnObjectkey))
-                {
-                    liftingAHeavyObject = false;
-                    cursor.GetComponent<Image>().fillAmount = 1;
-                    timer = 0;
-                }
-                if(liftingAHeavyObject)
-                {
-                    timer += 1*Time.deltaTime;
-                    cursor.GetComponent<Image>().fillAmount = timer;
-                    if(timer >1)
-                    {
-                        Debug.Log("!");
-                        objectInHand = hit.transform;
-                        Tacing();
-                        timer = 0;
-                        return;
-                    }
-                    
-                }
+                liftingAHeavyObject = true;
             }
-
-
-            if(Input.GetKeyDown(putAnObjectkey) && checkingForTheTakenObject && objectInHand != null && putAnObject == false)
+            //прерывание поднятие тяжёлого объекта
+            if(Input.GetKeyUp(takeAnObjectkey))
             {
-                objectInHand.parent = null;
-                putAnObject = true;
-                objectInHand.rotation = Quaternion.Euler(0,0,0);
-                return;
+                liftingAHeavyObject = false;
+                cursor.GetComponent<Image>().fillAmount = 1;
+                timer = 0;
             }
-            if(Physics.Raycast(ray, out hit, 4, layerMasks[2]) && checkingForTheTakenObject &&  putAnObject)
+            //активный таймер
+            if(liftingAHeavyObject)
             {
-                objectInHand.position = hit.point;
-
-                if(Input.GetKey(turnTheObjectToTheLeft))
+                timer += 1*Time.deltaTime;
+                cursor.GetComponent<Image>().fillAmount = timer;
+                if(timer >1)
                 {
-                    objectInHand.Rotate(0,1,0);
-                }
-                if(Input.GetKey(turnTheObjectToTheRight))
-                {
-                    objectInHand.Rotate(0,-1,0);
-                }
-                if(Input.GetKeyDown(takeAnObjectkey))
-                {
-                    Put();
-                    putAnObject = false;
-                }
-                if(Input.GetKeyDown(putAnObjectkey))
-                {
+                    objectInHand = hit.transform;
                     Tacing();
-                    putAnObject = false;
+                    timer = 0;
+                    return;
                 }
+                
             }
         }
-    }
 
+        if(Input.GetKeyDown(putAnObjectkey) && checkingForTheTakenObject && objectInHand != null && putAnObject == false)
+        {
+            objectInHand.parent = null;
+            putAnObject = true;
+            objectInHand.rotation = Quaternion.Euler(0,0,0);
+            return;
+        }
+        if(Physics.Raycast(ray, out hit, 4, layerMasks[2]) && checkingForTheTakenObject &&  putAnObject)
+        {
+            objectInHand.position = hit.point;
+
+            //вращять объект в лево
+            if(Input.GetKey(turnTheObjectToTheLeft))
+            {
+                objectInHand.Rotate(0,1,0);
+            }
+            //вращять объект в право
+            if(Input.GetKey(turnTheObjectToTheRight))
+            {
+                objectInHand.Rotate(0,-1,0);
+            }
+            //оставить объект на земле
+            if(Input.GetKeyDown(takeAnObjectkey))
+            {
+                Put();
+                putAnObject = false;
+                return;
+            }
+            //взять снова объект с земли
+            if(Input.GetKeyDown(putAnObjectkey))
+            {
+                Tacing();
+                putAnObject = false;
+                return;
+            }
+        }
+        
+  }
+
+    //взять
     private void Tacing()
     {
-        objectInHand.position = armTransform.position;
-        objectInHand.parent = armTransform;
-        objectInHand.rotation = Quaternion.Euler(0,0,0);
-        objectInHand.transform.GetComponent<InteractiveObject>().TakingObject();
-        checkingForTheTakenObject = true;
+        objectInHand.position = armTransform.position;//позиция объекта = позиции руки
+        objectInHand.parent = armTransform;//объект становится ребёнком объекта
+        objectInHand.rotation = Quaternion.Euler(0,0,0);//объект становится в позицию вращения 0
+        objectInHand.transform.GetComponent<InteractiveObject>().TakingObject();//вызываем метод отвечающий за физику
+        checkingForTheTakenObject = true;//указываем на то что объект в руках
     }
+
+    //положить объект 
     private void Put()
     {
         //objectInHand.position = hit.position;
         objectInHand.GetComponent<InteractiveObject>().PutAnObject();
         checkingForTheTakenObject = false;
         objectInHand = null;
-        
     }
 }
