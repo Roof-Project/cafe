@@ -7,6 +7,8 @@ public class InteractiveObject : MonoBehaviour
     private Collider colliderObject;//колайдер объекта
     private Rigidbody rigidbodyObject;//физика объекта
 
+    private const float powerOfTheThrow = 250;//сила броска
+
     private void Start() 
     {
         colliderObject = GetComponent<Collider>();
@@ -23,5 +25,10 @@ public class InteractiveObject : MonoBehaviour
         colliderObject.isTrigger = false;
         rigidbodyObject.isKinematic = false;
     }
-    
+    public void DropTheObject()
+    {
+        rigidbodyObject.isKinematic = false;
+        rigidbodyObject.AddForce(transform.forward * powerOfTheThrow);
+        colliderObject.isTrigger = false;
+    }
 }

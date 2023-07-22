@@ -16,11 +16,13 @@ public class CoffeePackage : MonoBehaviour
         aPackedBagOfCoffee.SetActive(false);
         unpackedCoffeeBag.SetActive(true);
         packagingCondition = false;
+        gameObject.tag = "unpacked coffee bag";
     }
     public void PackAPackage()//запоковали назад
     {
         aPackedBagOfCoffee.SetActive(true);
         unpackedCoffeeBag.SetActive(false);
         packagingCondition = true;
+        gameObject.tag = "a packed bag of coffee";
     }
 }

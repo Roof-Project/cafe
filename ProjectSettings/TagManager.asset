@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - CoffeePackage
+  - unpacked coffee bag
+  - a packed bag of coffee
   layers:
   - Default
   - TransparentFX
@@ -14,8 +16,8 @@ TagManager:
   - UI
   - small objects
   - large object
-  - 
-  - 
+  - placement location
+  - player
   - 
   - 
   - 
