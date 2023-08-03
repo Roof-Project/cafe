@@ -27,7 +27,7 @@ public class LocationForTheObject : MonoBehaviour
 
     private void ShowAPlaceToInstall(string tagObject)//паказать место для установки
     {
-        if(nameObject != tagObject) return;
+        if(nameObject != tagObject || IsTheSpaceBeingUsed) return;
         childObject.SetActive(true);
     }
     private void HideTheInstallationLocation(string tagObject)//спрятать место для установки
