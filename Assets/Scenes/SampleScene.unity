@@ -666,7 +666,7 @@ GameObject:
   - component: {fileID: 966355746}
   - component: {fileID: 966355748}
   - component: {fileID: 966355747}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Scrollbar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -690,7 +690,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 10, y: 10}
+  m_SizeDelta: {x: 25, y: 25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &966355747
 MonoBehaviour:
@@ -927,7 +927,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1403595783
 Transform:
   m_ObjectHideFlags: 0
@@ -1014,7 +1014,7 @@ GameObject:
   - component: {fileID: 1430017141}
   - component: {fileID: 1430017140}
   - component: {fileID: 1430017139}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1034,7 +1034,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 966355746}
-  m_Father: {fileID: 8511953334107453560}
+  m_Father: {fileID: 8512235587895074712}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1048,7 +1048,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1430017137}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
   m_Name: 
@@ -1057,7 +1057,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 0
 --- !u!114 &1430017140
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1092,7 +1092,7 @@ Canvas:
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 8531754152040437450}
-  m_PlaneDistance: 100
+  m_PlaneDistance: 0.30001
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -2097,7 +2097,6 @@ Transform:
   - {fileID: 8512267812080289586}
   - {fileID: 8520405610219882932}
   - {fileID: 8515879148642148046}
-  - {fileID: 1430017138}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &8512235587895074712
@@ -2114,6 +2113,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 579002366}
+  - {fileID: 1430017138}
   m_Father: {fileID: 8511953334107453560}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &8512267812080289586
@@ -2326,7 +2326,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 15
+  far clip plane: 6
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -2545,6 +2545,7 @@ MonoBehaviour:
   turnTheObjectToTheLeft: 122
   turnTheObjectToTheRight: 120
   objectInHand: {fileID: 0}
+  _camera: {fileID: 8531754152040437450}
 --- !u!33 &8744541778017800096
 MeshFilter:
   m_ObjectHideFlags: 0
